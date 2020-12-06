@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace AnimalMatchingGame
 {
@@ -20,10 +21,30 @@ namespace AnimalMatchingGame
     /// </summary>
     public partial class MainWindow : Window
     {
+        DispatcherTimer timer = new DispatcherTimer();
+        int tenthOfSecondsElapsed;
+        int matchesFound;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            timer.Interval = TimeSpan.FromSeconds(.1);
+            timer.Tick += Timer_Tick;
+
             SetUpGame();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            tenthOfSecondsElapsed++;
+            timeTextBlock.Text = (tenthOfSecondsElapsed / 10F).ToString("0.0s");
+
+            if (matchesFound == 8)
+            {
+                timer.Stop();
+                timeTextBlock.Text = timeTextBlock.Text + " - Play again?";
+            }
         }
 
         private void SetUpGame()
@@ -36,7 +57,7 @@ namespace AnimalMatchingGame
                 "🐴","🐴",
                 "🐷","🐷",
                 "🐼","🐼",
-                "🐼","🐼",
+                "🐶","🐶",
                 "🐹","🐹"
             };
 
@@ -44,14 +65,23 @@ namespace AnimalMatchingGame
 
             foreach (TextBlock textBlock in mainGrid.Children.OfType<TextBlock>())
             {
-                int index = random.Next(animalEmojis.Count);
+                if (textBlock.Name != "timeTextBlock")
+                {
+                    int index = random.Next(animalEmojis.Count);
 
-                string nextEmoji = animalEmojis[index];
+                    string nextEmoji = animalEmojis[index];
 
-                textBlock.Text = nextEmoji;
+                    textBlock.Text = nextEmoji;
 
-                animalEmojis.RemoveAt(index);
+                    textBlock.Visibility = Visibility.Visible;
+
+                    animalEmojis.RemoveAt(index);
+                }
             }
+
+            timer.Start();
+            tenthOfSecondsElapsed = 0;
+            matchesFound = 0;
         }
 
         TextBlock lastTextBlockClicked;
@@ -69,6 +99,7 @@ namespace AnimalMatchingGame
             }
             else if (textBlock.Text ==lastTextBlockClicked.Text)
             {
+                matchesFound++;
                 textBlock.Visibility = Visibility.Hidden;
                 findingMatch = false;
             }
@@ -76,6 +107,14 @@ namespace AnimalMatchingGame
             {
                 lastTextBlockClicked.Visibility = Visibility.Visible;
                 findingMatch = false;
+            }
+        }
+
+        private void timeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (matchesFound == 8)
+            {
+                SetUpGame();
             }
         }
     }
