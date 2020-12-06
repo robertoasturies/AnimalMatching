@@ -49,17 +49,12 @@ namespace AnimalMatchingGame
 
         private void SetUpGame()
         {
-            List<string> animalEmojis = new List<string>()
+            List<string> animalEmojisStore = new List<string>()
             {
-                "🐮","🐮",
-                "🦄","🦄",
-                "🐔","🐔",
-                "🐴","🐴",
-                "🐷","🐷",
-                "🐼","🐼",
-                "🐶","🐶",
-                "🐹","🐹"
+                "🐮", "🦄", "🐔", "🐴", "🐷", "🐼", "🐶", "🐹", "🐱", "🦁", "🐯", "🦒", "🦊", "🐗", "🐰", "🐸", "🦓", "🐨", "🐲"
             };
+
+            List<string> animalEmojis = FillListOfAnimalEmojis(animalEmojisStore);
 
             Random random = new Random();
 
@@ -82,6 +77,29 @@ namespace AnimalMatchingGame
             timer.Start();
             tenthOfSecondsElapsed = 0;
             matchesFound = 0;
+        }
+
+        private List<string> FillListOfAnimalEmojis(List<string> animals)
+        {
+            Random random = new Random();
+            int counter = 0;
+            List<string> animalEmojis = new List<string>();
+
+            do
+            {
+                int index = random.Next(animals.Count);
+
+                string nextEmoji = animals[index];
+
+                animalEmojis.Add(nextEmoji);
+                animalEmojis.Add(nextEmoji);
+
+                animals.RemoveAt(index);
+
+                counter++;
+            } while (counter < 8);
+
+            return animalEmojis;
         }
 
         TextBlock lastTextBlockClicked;
