@@ -37,13 +37,20 @@ namespace AnimalMatchingGame
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            tenthOfSecondsElapsed++;
+            tenthOfSecondsElapsed--;
             timeTextBlock.Text = (tenthOfSecondsElapsed / 10F).ToString("0.0s");
 
             if (matchesFound == 8)
             {
                 timer.Stop();
                 timeTextBlock.Text = timeTextBlock.Text + " - Play again?";
+            }
+
+            if (tenthOfSecondsElapsed <= 0)
+            {
+                timer.Stop();
+                timeTextBlock.FontSize = 30.0;
+                timeTextBlock.Text = "Game Over - Play again?";
             }
         }
 
@@ -75,7 +82,7 @@ namespace AnimalMatchingGame
             }
 
             timer.Start();
-            tenthOfSecondsElapsed = 0;
+            tenthOfSecondsElapsed = 150;
             matchesFound = 0;
         }
 
@@ -130,7 +137,7 @@ namespace AnimalMatchingGame
 
         private void timeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (matchesFound == 8)
+            if (matchesFound == 8 || tenthOfSecondsElapsed <= 0)
             {
                 SetUpGame();
             }
